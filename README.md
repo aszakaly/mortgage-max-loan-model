@@ -34,10 +34,11 @@ monthly debt, down payment) and **no demographic data**.
 2. **Data cleaning** — `01_clean_data.py` → `mortgage_clean.csv` + a full
    integrity audit (`cleaning_audit.csv`). Nothing removed; the only anomaly (41
    rows implying a working start age < 16) is **kept and flagged**.
-3. **Feature decisions** — exclude **interest rate** (a risk-based price, ~−0.95
-   correlated with credit score and 91–94% predictable from other inputs — using
-   it would be circular); **keep down payment** (a genuine input; dropping it
-   raises error by 62%).
+3. **Feature decisions** — exclude **interest rate** (assumed — not verifiable
+   here — to be set *in parallel* with the loan; ~−0.95 correlated with credit
+   score and 91–94% predictable from other inputs, so using it would be
+   circular); **keep down payment** (a genuine input; dropping it raises error by
+   62%).
 4. **Method selection** — `02_model_benchmark.py` → benchmark 3 model families ×
    raw/log target (6 combinations) on one held-out split → `model_benchmark.csv`.
    Gradient boosting on the raw target wins clearly.
@@ -62,7 +63,7 @@ The full evidence trail for steps 3–5 is in **`MODEL_DECISION.md`**.
 |---|---|---|---|
 | Stage 0 – Setup | **Target leakage** | `Max Loan Amount` held out of all modelling; used only for final evaluation | The model must predict the limit, not be told it |
 | Stage 2 – Cleaning | **41 anomalous rows** | **Kept and flagged** (implied working start age 14–15) | Cosmetic synthetic-data artifact (off by 1–2 yrs), 0.08% of rows; removing adds no value |
-| Stage 3 – Method | **Interest rate** | **Excluded** as a predictor | It is a bank-set price, ~−0.95 correlated with credit score and 91–94% predictable from other inputs — using it is circular and redundant |
+| Stage 3 – Method | **Interest rate** | **Excluded** as a predictor (on a stated assumption) | **Assumption — not verifiable from this data:** I judged the rate to be *calculated in parallel with the maximum loan amount* (a bank output, not an applicant input). It can't be fact-checked here, but it's consistent with the evidence — ~−0.95 correlation with credit score and 91–94% predictable from the other inputs — on which basis using it would be circular and redundant |
 | Stage 3 – Method | **Down payment** | **Kept** | A genuine applicant input (purchasing power); dropping it raises MAE from $21,966 → $35,648 |
 | Stage 3 – Method | **Model family** | **HistGradientBoosting** | Beats random forest and linear on every metric (linear leaves ~$30k MAE on the table) |
 | Stage 3 – Method | **Target scale** | **Raw** (not log) | Identical accuracy for the winner; raw keeps everything in native USD |
