@@ -28,6 +28,10 @@ CLI:
                                  "Existing Monthly Debt (USD)": 900, "Down Payment (USD)": 60000}'
     python3 score.py --selftest
 
+Logging: operational + fatal messages go to stderr (add --log-file to also persist
+them); per-row rejections travel with the data (reason column + .rejects.csv), not
+the log. Fatal errors are logged at ERROR and exit 2.
+
 Exit codes: 0 ok · 2 fatal (bad args / missing model / missing contract column / no input).
 Requires the same scikit-learn the model was trained with (see EXPECTED_SKLEARN).
 """
@@ -58,6 +62,22 @@ RANGES = {
 log = logging.getLogger("score")
 
 
+class ScoringError(Exception):
+    """A fatal, caller-facing error (bad args, missing model/contract column, bad
+    input). Library code raises it; the CLI logs it at ERROR and exits with 2."""
+
+
+def setup_logging(level=logging.INFO, log_file=None):
+    """Operational + fatal logs go to stderr (the platform persists those);
+    add a file handler too when log_file is given. Per-row rejections are NOT
+    logged here — they travel with the data (reason column + .rejects.csv)."""
+    handlers = [logging.StreamHandler(sys.stderr)]
+    if log_file:
+        handlers.append(logging.FileHandler(log_file))
+    logging.basicConfig(level=level, force=True,
+                        format="%(asctime)s %(levelname)s %(message)s", handlers=handlers)
+
+
 # --------------------------------------------------------------------------- #
 # Model loading
 # --------------------------------------------------------------------------- #
@@ -71,7 +91,7 @@ def load_model(path=MODEL_PATH):
     try:
         model = joblib.load(path)
     except FileNotFoundError:
-        raise SystemExit(f"[fatal] model artifact not found: {path}")
+        raise ScoringError(f"model artifact not found: {path}")
     return model
 
 
@@ -125,7 +145,7 @@ def score_frame(df, model=None, path=MODEL_PATH):
     """
     missing = _missing_columns(df)
     if missing:
-        raise SystemExit(f"[fatal] input is missing required column(s): {missing}")
+        raise ScoringError(f"input is missing required column(s): {missing}")
 
     model = model if model is not None else load_model(path)
     ver = model_version(path)
@@ -163,9 +183,9 @@ def _run_batch(args):
     try:
         df = pd.read_csv(args.input)
     except FileNotFoundError:
-        raise SystemExit(f"[fatal] input file not found: {args.input}")
+        raise ScoringError(f"input file not found: {args.input}")
     if len(df) == 0:
-        raise SystemExit("[fatal] input has no rows")
+        raise ScoringError("input has no rows")
 
     scored = score_frame(df, path=args.model)
     scored.to_csv(args.output, index=False)
@@ -184,10 +204,10 @@ def _run_json(args):
     try:
         record = json.loads(payload)
     except json.JSONDecodeError as e:
-        raise SystemExit(f"[fatal] could not parse --json: {e}")
+        raise ScoringError(f"could not parse --json: {e}")
     if isinstance(record, list):
-        raise SystemExit("[fatal] --json takes a single record object, not a list; "
-                         "use --input for batches")
+        raise ScoringError("--json takes a single record object, not a list; "
+                           "use --input for batches")
     print(json.dumps(score_record(record, path=args.model), default=str, indent=2))
 
 
@@ -213,21 +233,25 @@ def main(argv=None):
     p.add_argument("--json", help="Score a single JSON record (use '-' to read stdin).")
     p.add_argument("--model", default=MODEL_PATH, help=f"Model artifact (default: {MODEL_PATH}).")
     p.add_argument("--selftest", action="store_true", help="Run a built-in smoke test and exit.")
+    p.add_argument("--log-file", help="Also write logs to this file (stderr is always used).")
     p.add_argument("--quiet", action="store_true", help="Only log warnings and errors.")
     args = p.parse_args(argv)
 
-    logging.basicConfig(level=logging.WARNING if args.quiet else logging.INFO,
-                        format="%(levelname)s %(message)s")
+    setup_logging(logging.WARNING if args.quiet else logging.INFO, args.log_file)
 
-    if args.selftest:
-        return _run_selftest(args)
-    if args.json is not None:
-        return _run_json(args)
-    if args.input:
-        if not args.output:
-            raise SystemExit("[fatal] --output is required with --input")
-        return _run_batch(args)
-    p.error("nothing to do: pass --input/--output, --json, or --selftest")
+    try:
+        if args.selftest:
+            return _run_selftest(args)
+        if args.json is not None:
+            return _run_json(args)
+        if args.input:
+            if not args.output:
+                raise ScoringError("--output is required with --input")
+            return _run_batch(args)
+        p.error("nothing to do: pass --input/--output, --json, or --selftest")
+    except ScoringError as e:
+        log.error("%s", e)
+        sys.exit(2)
 
 
 if __name__ == "__main__":
