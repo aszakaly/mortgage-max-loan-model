@@ -48,6 +48,9 @@ monthly debt, down payment) and **no demographic data**.
 6. **Presentations** — `04_build_presentations.js` (PPTX) and
    `05_build_html_decks.py` (HTML) → two audiences (executive + internal), in the
    "structured craft" brand.
+7. **Production scoring** — `score.py` → inference-only handoff: loads
+   `model_final.joblib`, enforces the four-feature contract, and scores CSV
+   batches or a single JSON record, **rejecting out-of-range rows with a reason**.
 
 The full evidence trail for steps 3–5 is in **`MODEL_DECISION.md`**.
 
@@ -66,6 +69,11 @@ The full evidence trail for steps 3–5 is in **`MODEL_DECISION.md`**.
 | **Feature set** | **4 features** primary (income, credit, debt, down payment); full 12 kept on record | The other 8 are downstream correlates of income/credit (job ≈ income tiers, etc.) — zero permutation importance; 4-feature is marginally more accurate, simpler, and uses no demographics (ECOA-friendly) |
 | **Evaluation** | 80/20 hold-out + 5-fold CV; R², MAE, RMSE, MAPE, error-by-band | Honest test on unseen applicants; CV confirms stability (R² std ≤ 0.0004) |
 | **Deliverable** | Two decks (exec + internal) × PPTX + self-contained HTML | Separate audiences; PPTX uses Office-safe fonts, HTML uses the real brand fonts |
+| **Production interface** | `score.py` — importable core (`score_frame`/`score_record`) + CLI, inference-only on `model_final.joblib` | One code path for CLI/future API; training stays in the numbered scripts; named plainly (outside the `01–05` reproduce chain, and importable) |
+| **Scoring I/O** | CSV batch (rows + prediction columns) and a single JSON record | Covers scheduled batch scoring and ad-hoc/one-off requests |
+| **Input validation** | Reject bad rows with a reason (missing *column* = fatal); never coerce | Lending data — surface problems, don't hide them; valid rows still score, rejects written to a separate file |
+| **Scoring output** | `predicted_max_loan` + `model_version` (artifact hash) + `scored_at` + `status`; no approve/decline policy baked in | Every prediction is traceable/auditable; the consuming system owns business policy |
+| **Observability** | Logs to stderr (+ optional `--log-file`); fatals raise a catchable `ScoringError`, logged at ERROR, exit 2 | Operable in production and library-friendly; per-row rejections travel with the data, not the log |
 
 ---
 
