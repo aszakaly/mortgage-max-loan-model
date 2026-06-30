@@ -14,7 +14,7 @@ used only for the final evaluation in this document.
 
 | Feature | Decision | Basis |
 |---|---|---|
-| **Interest Rate** | **Excluded** | It is a bank **output**, not an applicant input. It is almost perfectly determined by credit score (r = −0.95); other applicant inputs predict it with **CV R² = 0.91–0.94**. Using it would be circular (a bank decision predicting another bank decision) and largely re-encodes credit score. |
+| **Interest Rate** | **Excluded** (stated assumption) | **Assumption — not verifiable from this data:** the rate is treated as *calculated in parallel with the maximum loan amount* (a bank **output**, not an applicant input). This can't be fact-checked here, but it is consistent with the evidence — almost perfectly determined by credit score (r = −0.95) and predicted from other applicant inputs at **CV R² = 0.91–0.94** — on which basis using it would be circular (a bank decision predicting another) and largely re-encodes credit score. |
 | **Down Payment** | **Kept** | A genuine applicant input (household purchasing power). Dropping it raises primary-model MAE from **$21,966 → $35,648** — it carries real, non-redundant signal. |
 | Max Loan Amount | Held out | Ground truth / evaluation target only. |
 | All other attributes | Available to models | Evaluated; see the parsimony finding below. |
