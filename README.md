@@ -168,6 +168,21 @@ is highest on the lowest income band (`<$60k`, MAPE 6.2%) and on the `Very Good
 <580` tier is **empty** — the model never saw a sub-580 applicant, which is exactly
 what the OOD flag guards.
 
+**Is the model still fit? (segment view).** Both breakdowns weight-average back to
+the 3.65% headline MAPE — no segment hides a weak spot the overall number would
+mask. Absolute error (MAE) grows with loan size, but proportional error (MAPE)
+holds in a tight 3.2–4.4% band across almost the whole range, so accuracy is
+*consistent*, not merely good on average. The model therefore stays fit **within
+its training envelope** as a first-pass limit, with two scoped caveats to *gate*
+rather than defects to fix: low-income / small-loan applicants (`<$60k`,
+MAPE 6.2% — proportionally the softest) warrant a tighter tolerance or review
+band, and sub-580 credit scores are a genuine blind spot (no training data) the
+OOD flag should route to manual review. This does not lift the standing
+limitations — synthetic-style data (expect lower production accuracy), a model
+that mimics historical policy rather than realized risk, and no
+LTV/DTI/affordability context — so it remains a first-pass limit within its
+envelope, not a standalone lending decision.
+
 **2. Out-of-distribution flag in `score.py`.** `build_training_distribution.py`
 records the four inputs' training envelope `[p1, p99]` (from the same 80% the model
 saw) into `training_distribution.json`; `score.py` loads it and adds the soft
