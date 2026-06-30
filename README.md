@@ -58,22 +58,22 @@ The full evidence trail for steps 3–5 is in **`MODEL_DECISION.md`**.
 
 ## Key decisions
 
-| Decision | Choice made | Why |
-|---|---|---|
-| **Target leakage** | `Max Loan Amount` held out of all modelling; used only for final evaluation | The model must predict the limit, not be told it |
-| **Interest rate** | **Excluded** as a predictor | It is a bank-set price, ~−0.95 correlated with credit score and 91–94% predictable from other inputs — using it is circular and redundant |
-| **Down payment** | **Kept** | A genuine applicant input (purchasing power); dropping it raises MAE from $21,966 → $35,648 |
-| **41 anomalous rows** | **Kept and flagged** (implied working start age 14–15) | Cosmetic synthetic-data artifact (off by 1–2 yrs), 0.08% of rows; removing adds no value |
-| **Model family** | **HistGradientBoosting** | Beats random forest and linear on every metric (linear leaves ~$30k MAE on the table) |
-| **Target scale** | **Raw** (not log) | Identical accuracy for the winner; raw keeps everything in native USD |
-| **Feature set** | **4 features** primary (income, credit, debt, down payment); full 12 kept on record | The other 8 are downstream correlates of income/credit (job ≈ income tiers, etc.) — zero permutation importance; 4-feature is marginally more accurate, simpler, and uses no demographics (ECOA-friendly) |
-| **Evaluation** | 80/20 hold-out + 5-fold CV; R², MAE, RMSE, MAPE, error-by-band | Honest test on unseen applicants; CV confirms stability (R² std ≤ 0.0004) |
-| **Deliverable** | Two decks (exec + internal) × PPTX + self-contained HTML | Separate audiences; PPTX uses Office-safe fonts, HTML uses the real brand fonts |
-| **Production interface** | `score.py` — importable core (`score_frame`/`score_record`) + CLI, inference-only on `model_final.joblib` | One code path for CLI/future API; training stays in the numbered scripts; named plainly (outside the `01–05` reproduce chain, and importable) |
-| **Scoring I/O** | CSV batch (rows + prediction columns) and a single JSON record | Covers scheduled batch scoring and ad-hoc/one-off requests |
-| **Input validation** | Reject bad rows with a reason (missing *column* = fatal); never coerce | Lending data — surface problems, don't hide them; valid rows still score, rejects written to a separate file |
-| **Scoring output** | `predicted_max_loan` + `model_version` (artifact hash) + `scored_at` + `status`; no approve/decline policy baked in | Every prediction is traceable/auditable; the consuming system owns business policy |
-| **Observability** | Logs to stderr (+ optional `--log-file`); fatals raise a catchable `ScoringError`, logged at ERROR, exit 2 | Operable in production and library-friendly; per-row rejections travel with the data, not the log |
+| Stage | Decision | Choice made | Why |
+|---|---|---|---|
+| Stage 0 – Setup | **Target leakage** | `Max Loan Amount` held out of all modelling; used only for final evaluation | The model must predict the limit, not be told it |
+| Stage 2 – Cleaning | **41 anomalous rows** | **Kept and flagged** (implied working start age 14–15) | Cosmetic synthetic-data artifact (off by 1–2 yrs), 0.08% of rows; removing adds no value |
+| Stage 3 – Method | **Interest rate** | **Excluded** as a predictor | It is a bank-set price, ~−0.95 correlated with credit score and 91–94% predictable from other inputs — using it is circular and redundant |
+| Stage 3 – Method | **Down payment** | **Kept** | A genuine applicant input (purchasing power); dropping it raises MAE from $21,966 → $35,648 |
+| Stage 3 – Method | **Model family** | **HistGradientBoosting** | Beats random forest and linear on every metric (linear leaves ~$30k MAE on the table) |
+| Stage 3 – Method | **Target scale** | **Raw** (not log) | Identical accuracy for the winner; raw keeps everything in native USD |
+| Stage 3 – Method | **Feature set** | **4 features** primary (income, credit, debt, down payment); full 12 kept on record | The other 8 are downstream correlates of income/credit (job ≈ income tiers, etc.) — zero permutation importance; 4-feature is marginally more accurate, simpler, and uses no demographics (ECOA-friendly) |
+| Stage 3 – Method | **Evaluation** | 80/20 hold-out + 5-fold CV; R², MAE, RMSE, MAPE, error-by-band | Honest test on unseen applicants; CV confirms stability (R² std ≤ 0.0004) |
+| Stage 4 – Outputs | **Deliverable** | Two decks (exec + internal) × PPTX + self-contained HTML | Separate audiences; PPTX uses Office-safe fonts, HTML uses the real brand fonts |
+| Stage 4 – Outputs | **Production interface** | `score.py` — importable core (`score_frame`/`score_record`) + CLI, inference-only on `model_final.joblib` | One code path for CLI/future API; training stays in the numbered scripts; named plainly (outside the `01–05` reproduce chain, and importable) |
+| Stage 4 – Outputs | **Scoring I/O** | CSV batch (rows + prediction columns) and a single JSON record | Covers scheduled batch scoring and ad-hoc/one-off requests |
+| Stage 4 – Outputs | **Input validation** | Reject bad rows with a reason (missing *column* = fatal); never coerce | Lending data — surface problems, don't hide them; valid rows still score, rejects written to a separate file |
+| Stage 4 – Outputs | **Scoring output** | `predicted_max_loan` + `model_version` (artifact hash) + `scored_at` + `status`; no approve/decline policy baked in | Every prediction is traceable/auditable; the consuming system owns business policy |
+| Stage 4 – Outputs | **Observability** | Logs to stderr (+ optional `--log-file`); fatals raise a catchable `ScoringError`, logged at ERROR, exit 2 | Operable in production and library-friendly; per-row rejections travel with the data, not the log |
 
 ---
 
