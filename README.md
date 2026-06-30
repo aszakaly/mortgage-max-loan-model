@@ -112,7 +112,8 @@ python3 05_build_html_decks.py  # → both .html decks
 **Requirements:** Python 3 (`pandas`, `numpy`, `scikit-learn`, `matplotlib`,
 `joblib`) and Node.js (`pptxgenjs`, install globally with `npm i -g pptxgenjs`).
 LibreOffice + Poppler are only needed to *render* PPTX to images for QA, not to
-produce the deliverables. `mortgage_loan_dataset.csv` is the committed raw input.
+produce the deliverables. `mortgage_loan_dataset.csv` is the committed raw input
+(source: [Kaggle — chukwuemeka64/mortgage-data](https://www.kaggle.com/datasets/chukwuemeka64/mortgage-data)).
 
 ---
 
@@ -177,7 +178,7 @@ out of scope.
 
 | File | One-line description |
 |---|---|
-| `mortgage_loan_dataset.csv` | Raw input — 49,990 mortgage applicants × 14 columns. |
+| `mortgage_loan_dataset.csv` | Raw input — 49,990 mortgage applicants × 14 columns. Source: [Kaggle — chukwuemeka64/mortgage-data](https://www.kaggle.com/datasets/chukwuemeka64/mortgage-data). |
 | `01_clean_data.py` | Validates the raw data, writes the cleaned dataset + integrity audit + EDA summary. |
 | `02_model_benchmark.py` | Benchmarks 6 model × target-scale combinations on one held-out split. |
 | `03_train_evaluate.py` | Fits the primary (4-feature) and full (12-feature) models and evaluates both vs the held-out actual. |
