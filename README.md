@@ -108,6 +108,30 @@ produce the deliverables. `mortgage_loan_dataset.csv` is the committed raw input
 
 ---
 
+## Scoring new applicants (production)
+
+`score.py` is the inference-only handoff artifact (not part of the reproduce
+chain) — it loads `model_final.joblib` and scores new applicants, enforcing the
+four-feature contract and **rejecting out-of-range rows with a reason** (never
+coercing). Each record carries `predicted_max_loan` + `model_version` +
+`scored_at` + a validation `status`; no approve/decline policy is baked in.
+
+```bash
+# batch: CSV in → CSV out (+ a .rejects.csv listing any invalid rows)
+python3 score.py --input applicants.csv --output scored.csv
+
+# single record
+python3 score.py --json '{"Annual Income (USD)": 120000, "Credit Score": 740, "Existing Monthly Debt (USD)": 900, "Down Payment (USD)": 60000}'
+
+python3 score.py --selftest      # built-in smoke test
+```
+
+Importable: `from score import score_frame, score_record`. Requires the same
+scikit-learn the model was trained with (pinned as `EXPECTED_SKLEARN` in the
+script; it warns on mismatch).
+
+---
+
 ## Methodology
 
 **Model.** `HistGradientBoostingRegressor` (scikit-learn) — `max_iter=400`,
@@ -152,6 +176,7 @@ out of scope.
 | `gen_chart_images.py` | Renders the brand-styled predicted-vs-actual scatter PNG for the PPTX decks. |
 | `04_build_presentations.js` | Builds the executive and internal **PPTX** decks (pptxgenjs). |
 | `05_build_html_decks.py` | Builds the executive and internal **HTML** decks (Chart.js). |
+| `score.py` | Production scoring (inference-only) — loads `model_final.joblib`, validates the feature contract, scores CSV batches or a JSON record; importable core + CLI. |
 | `MODEL_DECISION.md` | The decision record — feature rationale, benchmark, parsimony finding, evaluation. |
 | `cleaning_audit.csv` | Every integrity check + the 41 flagged-but-kept rows, with reasons; reconciles raw = kept + removed. |
 | `model_benchmark.csv` | The 6-way model comparison table. |
