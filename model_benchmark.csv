@@ -1,0 +1,7 @@
+model,target,test_R2,test_MAE,test_RMSE,test_MAPE_%,cv_R2_mean,cv_R2_std
+HistGradientBoosting,raw,0.9894,22428.0,31937.0,3.74,0.9886,0.0004
+HistGradientBoosting,log,0.9894,22463.0,31915.0,3.7,0.9886,0.0003
+Random Forest,raw,0.9876,24312.0,34498.0,4.14,0.9872,0.0003
+Random Forest,log,0.9876,24427.0,34551.0,4.12,0.9871,0.0003
+Ridge (linear),raw,0.9502,51858.0,69239.0,12.11,0.9506,0.0007
+Ridge (linear),log,0.883,62625.0,106103.0,9.97,0.879,0.0148

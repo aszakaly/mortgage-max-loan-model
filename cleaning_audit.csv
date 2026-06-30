@@ -1,0 +1,68 @@
+# CLEANING AUDIT — mortgage max-loan project
+# raw_rows=49990  kept_rows=49990  removed_rows=0  reconciles=True
+#
+# --- Integrity checks ---
+step,check,rows_flagged,action
+C1,Duplicate rows,0,kept
+C2,Any null value in row,0,kept
+C3,Age <= 0,0,kept
+C3,Annual Income (USD) <= 0,0,kept
+C3,Down Payment (USD) <= 0,0,kept
+C3,Credit Score <= 0,0,kept
+C3,Max Loan Amount (USD) <= 0,0,kept
+C4,Employment Years < 0,0,kept
+C4,Existing Monthly Debt (USD) < 0,0,kept
+C4,Loans Repaid < 0,0,kept
+C5,Credit Score outside 300-850,0,kept
+C6,Down Payment > Max Loan Amount,0,kept
+C7,Annualised existing debt > Annual income,0,kept
+C8,Gender has leading/trailing whitespace,0,kept
+C8,Married has leading/trailing whitespace,0,kept
+C8,Education has leading/trailing whitespace,0,kept
+C8,Job has leading/trailing whitespace,0,kept
+C8,Area has leading/trailing whitespace,0,kept
+C9,"Employment Years > Age-16 (implied start age < 16) — KEPT, FLAGGED",41,kept
+#
+# --- Flagged rows kept (step C9) ---
+row_index,Gender,Age,Married,Education,Job,Employment Years,Annual Income (USD),Interest Rate,Down Payment (USD),Credit Score,Existing Monthly Debt (USD),Area,Loans Repaid,Max Loan Amount (USD),implied_start_age,audit_step,audit_reason
+1026,Female,51,Yes,Bachelor's,Retired,36,115024.37,0.06,83783.76,706,2177.16,Urban,3,407260.21,15,C9,Employment Years exceeds (Age - 16); implied start age 15. Cosmetic synthetic-data artifact (off by 1-2 yrs). Kept by decision.
+2600,Female,53,No,Master's,Engineer,38,106709.14,0.04,26390.36,763,1356.77,Urban,2,604456.48,15,C9,Employment Years exceeds (Age - 16); implied start age 15. Cosmetic synthetic-data artifact (off by 1-2 yrs). Kept by decision.
+3877,Female,48,Yes,Master's,Freelancer,33,89429.55,0.04,25818.06,779,1315.89,Urban,5,487304.39,15,C9,Employment Years exceeds (Age - 16); implied start age 15. Cosmetic synthetic-data artifact (off by 1-2 yrs). Kept by decision.
+6256,Female,43,No,High School,Retired,28,55256.0,0.07,50552.76,708,1213.64,Urban,5,177993.92,15,C9,Employment Years exceeds (Age - 16); implied start age 15. Cosmetic synthetic-data artifact (off by 1-2 yrs). Kept by decision.
+7573,Female,59,Yes,PhD,Nurse,44,69801.79,0.04,55174.19,799,1287.7,Rural,10,388002.11,15,C9,Employment Years exceeds (Age - 16); implied start age 15. Cosmetic synthetic-data artifact (off by 1-2 yrs). Kept by decision.
+7930,Female,29,No,Bachelor's,Accountant,14,58098.32,0.05,7209.82,777,1127.02,Urban,5,246847.64,15,C9,Employment Years exceeds (Age - 16); implied start age 15. Cosmetic synthetic-data artifact (off by 1-2 yrs). Kept by decision.
+10294,Female,51,No,Master's,Banker,36,158159.81,0.06,82703.06,729,1498.54,Urban,7,754440.2,15,C9,Employment Years exceeds (Age - 16); implied start age 15. Cosmetic synthetic-data artifact (off by 1-2 yrs). Kept by decision.
+12618,Female,30,Yes,PhD,Engineer,15,146954.35,0.06,119362.98,753,1920.48,Suburban,2,780406.51,15,C9,Employment Years exceeds (Age - 16); implied start age 15. Cosmetic synthetic-data artifact (off by 1-2 yrs). Kept by decision.
+12730,Male,63,Yes,PhD,Lawyer,48,221983.24,0.06,20324.53,727,1483.4,Suburban,3,1124136.86,15,C9,Employment Years exceeds (Age - 16); implied start age 15. Cosmetic synthetic-data artifact (off by 1-2 yrs). Kept by decision.
+14058,Female,34,Yes,PhD,Sales Manager,19,125198.81,0.06,39455.09,725,1586.24,Suburban,3,530746.95,15,C9,Employment Years exceeds (Age - 16); implied start age 15. Cosmetic synthetic-data artifact (off by 1-2 yrs). Kept by decision.
+14062,Male,64,Yes,Bachelor's,Accountant,49,117726.89,0.04,89464.61,784,2099.95,Urban,11,640359.33,15,C9,Employment Years exceeds (Age - 16); implied start age 15. Cosmetic synthetic-data artifact (off by 1-2 yrs). Kept by decision.
+16961,Female,57,Yes,Bachelor's,Teacher,42,99485.16,0.03,92383.67,787,1556.61,Urban,9,650166.93,15,C9,Employment Years exceeds (Age - 16); implied start age 15. Cosmetic synthetic-data artifact (off by 1-2 yrs). Kept by decision.
+19141,Female,32,Yes,PhD,Software Engineer,17,152751.64,0.05,10736.16,757,3287.62,Urban,0,553868.9,15,C9,Employment Years exceeds (Age - 16); implied start age 15. Cosmetic synthetic-data artifact (off by 1-2 yrs). Kept by decision.
+19296,Male,35,Yes,PhD,Banker,20,143070.8,0.04,8434.13,763,2089.25,Suburban,6,736933.55,15,C9,Employment Years exceeds (Age - 16); implied start age 15. Cosmetic synthetic-data artifact (off by 1-2 yrs). Kept by decision.
+19744,Female,46,Yes,Bachelor's,Banker,32,138680.15,0.06,11075.56,735,2488.37,Urban,3,434129.6,14,C9,Employment Years exceeds (Age - 16); implied start age 14. Cosmetic synthetic-data artifact (off by 1-2 yrs). Kept by decision.
+19829,Male,52,Yes,PhD,Sales Manager,37,120375.45,0.07,13860.34,722,1565.68,Urban,7,454131.29,15,C9,Employment Years exceeds (Age - 16); implied start age 15. Cosmetic synthetic-data artifact (off by 1-2 yrs). Kept by decision.
+19845,Male,50,Yes,PhD,Engineer,35,144128.62,0.03,21530.34,822,1553.37,Urban,5,1077493.5,15,C9,Employment Years exceeds (Age - 16); implied start age 15. Cosmetic synthetic-data artifact (off by 1-2 yrs). Kept by decision.
+19872,Male,39,Yes,Master's,Business Owner,24,201270.89,0.03,127430.66,850,2763.46,Urban,6,1461104.03,15,C9,Employment Years exceeds (Age - 16); implied start age 15. Cosmetic synthetic-data artifact (off by 1-2 yrs). Kept by decision.
+20245,Male,36,Yes,Master's,Freelancer,21,102945.75,0.07,60413.57,686,747.64,Urban,1,519921.49,15,C9,Employment Years exceeds (Age - 16); implied start age 15. Cosmetic synthetic-data artifact (off by 1-2 yrs). Kept by decision.
+21883,Male,56,Yes,High School,Lawyer,41,104718.98,0.05,48402.58,769,1654.38,Suburban,5,548017.37,15,C9,Employment Years exceeds (Age - 16); implied start age 15. Cosmetic synthetic-data artifact (off by 1-2 yrs). Kept by decision.
+27255,Male,60,Yes,Bachelor's,Retired,45,108711.14,0.08,78602.95,680,1726.37,Urban,9,388572.18,15,C9,Employment Years exceeds (Age - 16); implied start age 15. Cosmetic synthetic-data artifact (off by 1-2 yrs). Kept by decision.
+27256,Male,33,Yes,Master's,Accountant,19,59099.17,0.04,5000.0,801,308.56,Rural,1,438944.57,14,C9,Employment Years exceeds (Age - 16); implied start age 14. Cosmetic synthetic-data artifact (off by 1-2 yrs). Kept by decision.
+28870,Female,51,No,High School,Accountant,37,103035.64,0.03,59055.78,813,1825.71,Urban,11,644304.83,14,C9,Employment Years exceeds (Age - 16); implied start age 14. Cosmetic synthetic-data artifact (off by 1-2 yrs). Kept by decision.
+29053,Male,42,Yes,Bachelor's,Nurse,27,56510.05,0.07,89008.68,709,1184.72,Urban,3,223503.0,15,C9,Employment Years exceeds (Age - 16); implied start age 15. Cosmetic synthetic-data artifact (off by 1-2 yrs). Kept by decision.
+30264,Male,52,Yes,Master's,Sales Manager,37,161478.06,0.05,61030.94,720,1666.35,Rural,6,795725.54,15,C9,Employment Years exceeds (Age - 16); implied start age 15. Cosmetic synthetic-data artifact (off by 1-2 yrs). Kept by decision.
+30393,Female,59,No,PhD,Software Engineer,45,200861.53,0.05,100621.19,750,2631.6,Suburban,8,1150709.69,14,C9,Employment Years exceeds (Age - 16); implied start age 14. Cosmetic synthetic-data artifact (off by 1-2 yrs). Kept by decision.
+32152,Female,64,No,Master's,Doctor,49,227935.82,0.03,121599.69,850,3495.94,Urban,6,1545063.8,15,C9,Employment Years exceeds (Age - 16); implied start age 15. Cosmetic synthetic-data artifact (off by 1-2 yrs). Kept by decision.
+33370,Male,39,No,Master's,Software Engineer,24,130505.9,0.1,39456.57,643,2580.11,Suburban,3,270771.26,15,C9,Employment Years exceeds (Age - 16); implied start age 15. Cosmetic synthetic-data artifact (off by 1-2 yrs). Kept by decision.
+33540,Female,58,No,High School,Sales Manager,43,181992.89,0.1,211631.74,636,2393.18,Urban,7,655958.06,15,C9,Employment Years exceeds (Age - 16); implied start age 15. Cosmetic synthetic-data artifact (off by 1-2 yrs). Kept by decision.
+34895,Female,45,Yes,Bachelor's,Freelancer,30,123757.37,0.08,39781.47,673,1914.75,Rural,3,378887.94,15,C9,Employment Years exceeds (Age - 16); implied start age 15. Cosmetic synthetic-data artifact (off by 1-2 yrs). Kept by decision.
+37381,Male,28,No,Bachelor's,Teacher,13,124128.88,0.06,96950.44,719,1351.4,Rural,3,600927.93,15,C9,Employment Years exceeds (Age - 16); implied start age 15. Cosmetic synthetic-data artifact (off by 1-2 yrs). Kept by decision.
+37730,Male,65,No,Bachelor's,Retired,50,106894.69,0.03,80659.37,788,672.72,Urban,5,893293.49,15,C9,Employment Years exceeds (Age - 16); implied start age 15. Cosmetic synthetic-data artifact (off by 1-2 yrs). Kept by decision.
+38240,Female,34,Yes,Master's,Retired,19,93358.08,0.07,40913.13,670,1518.56,Urban,0,304335.43,15,C9,Employment Years exceeds (Age - 16); implied start age 15. Cosmetic synthetic-data artifact (off by 1-2 yrs). Kept by decision.
+38644,Male,53,No,High School,Banker,38,104897.15,0.07,62054.72,727,1931.46,Suburban,2,353872.59,15,C9,Employment Years exceeds (Age - 16); implied start age 15. Cosmetic synthetic-data artifact (off by 1-2 yrs). Kept by decision.
+39475,Male,52,Yes,Bachelor's,Business Owner,37,188587.62,0.03,154156.73,850,1256.88,Urban,3,1719826.97,15,C9,Employment Years exceeds (Age - 16); implied start age 15. Cosmetic synthetic-data artifact (off by 1-2 yrs). Kept by decision.
+39570,Male,51,Yes,Master's,Business Owner,36,171447.87,0.03,189511.92,850,3668.73,Urban,6,1013727.08,15,C9,Employment Years exceeds (Age - 16); implied start age 15. Cosmetic synthetic-data artifact (off by 1-2 yrs). Kept by decision.
+42741,Male,44,Yes,Bachelor's,Nurse,29,95680.82,0.07,75545.85,707,1276.88,Suburban,5,394917.54,15,C9,Employment Years exceeds (Age - 16); implied start age 15. Cosmetic synthetic-data artifact (off by 1-2 yrs). Kept by decision.
+44320,Female,31,Yes,Bachelor's,Doctor,16,165567.43,0.08,80750.42,675,2258.83,Urban,2,553046.58,15,C9,Employment Years exceeds (Age - 16); implied start age 15. Cosmetic synthetic-data artifact (off by 1-2 yrs). Kept by decision.
+45878,Male,29,No,PhD,Teacher,14,125482.92,0.04,96262.37,758,2249.53,Urban,2,664713.53,15,C9,Employment Years exceeds (Age - 16); implied start age 15. Cosmetic synthetic-data artifact (off by 1-2 yrs). Kept by decision.
+46400,Male,40,No,Bachelor's,Engineer,25,96126.28,0.03,68562.23,838,1922.78,Urban,4,562503.97,15,C9,Employment Years exceeds (Age - 16); implied start age 15. Cosmetic synthetic-data artifact (off by 1-2 yrs). Kept by decision.
+47713,Female,37,No,PhD,Banker,22,194365.2,0.09,106095.0,658,2000.41,Suburban,2,715550.59,15,C9,Employment Years exceeds (Age - 16); implied start age 15. Cosmetic synthetic-data artifact (off by 1-2 yrs). Kept by decision.
