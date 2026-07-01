@@ -10,8 +10,8 @@ side-validation tasks against the trained model + held-out split:
   #3 debt partial-dependence— the learned shape of the debt effect (sanity check)
   #2 noise-degradation      — how fast accuracy decays as inputs get noisier
 
-Run:  python3 cross_examination_checks.py
-Reads: mortgage_clean.csv, model_final.joblib (same split/seed as 03).
+Run:  python3 scripts/cross_examination_checks.py
+Reads: data/mortgage_clean.csv, models/model_final.joblib (same split/seed as 03).
 """
 import numpy as np
 import pandas as pd
@@ -26,8 +26,8 @@ SEED = 42
 
 
 def main():
-    df = pd.read_csv("mortgage_clean.csv")
-    model = joblib.load("model_final.joblib")
+    df = pd.read_csv("data/mortgage_clean.csv")
+    model = joblib.load("models/model_final.joblib")
     X, y = df[FEATS], df[TARGET].values
     _, Xte, _, yte = train_test_split(X, y, test_size=0.20, random_state=SEED)
     base = model.predict(Xte)

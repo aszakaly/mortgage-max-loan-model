@@ -18,9 +18,9 @@ Bands (fixed, interpretable — mirroring error_by_band.csv, not quantiles):
   Income       : <$60k, $60–90k, $90–120k, $120–150k, $150–180k, ≥$180k
   Credit Score : standard FICO tiers — Poor <580, Fair 580–669, Good 670–739,
                  Very Good 740–799, Exceptional 800–850 (Poor is empty here: the
-                 model never saw a score below 580 — see training_distribution.json).
+                 model never saw a score below 580 — see models/training_distribution.json).
 
-    python3 segment_error.py     # -> error_by_income_band.csv, error_by_credit_band.csv
+    python3 scripts/segment_error.py     # -> metrics/error_by_income_band.csv, metrics/error_by_credit_band.csv
 
 Outputs parallel error_by_band.csv. No model is loaded; no artifact is retrained.
 """
@@ -29,8 +29,8 @@ import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
 
-CLEAN = "mortgage_clean.csv"
-PREDICTIONS = "predictions_test.csv"
+CLEAN = "data/mortgage_clean.csv"
+PREDICTIONS = "metrics/predictions_test.csv"
 TARGET = "Max Loan Amount (USD)"
 SEED = 42
 TEST_SIZE = 0.20
@@ -101,13 +101,13 @@ def main():
 
     inc = error_by(ev, "Annual Income (USD)", INCOME_BINS, INCOME_LABELS,
                    right=False, seg_mean_name="mean_income",
-                   out_path="error_by_income_band.csv")
+                   out_path="metrics/error_by_income_band.csv")
     print("\nError by income band (held-out test set):")
     print(inc.to_string())
 
     cred = error_by(ev, "Credit Score", CREDIT_BINS, CREDIT_LABELS,
                     right=True, seg_mean_name="mean_credit",
-                    out_path="error_by_credit_band.csv")
+                    out_path="metrics/error_by_credit_band.csv")
     print("\nError by credit-score band (FICO tiers, held-out test set):")
     print(cred.to_string())
 
@@ -115,7 +115,7 @@ def main():
     for name, tbl in [("income", inc), ("credit", cred)]:
         assert int(tbl["n"].sum()) == len(ev), f"{name} bands drop rows"
     print(f"\nReconciled: income and credit bands each cover all {len(ev)} rows.")
-    print("Wrote error_by_income_band.csv, error_by_credit_band.csv")
+    print("Wrote metrics/error_by_income_band.csv, metrics/error_by_credit_band.csv")
 
 
 if __name__ == "__main__":

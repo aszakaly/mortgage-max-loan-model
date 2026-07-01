@@ -13,7 +13,7 @@ Protocol
     every row of the comparison table is directly comparable.
   - Also reports 5-fold CV R2 on the training set for stability.
 
-Outputs: model_benchmark.csv (the comparison table) and prints it.
+Outputs: metrics/model_benchmark.csv (the comparison table) and prints it.
 """
 
 import numpy as np
@@ -27,7 +27,7 @@ from sklearn.ensemble import RandomForestRegressor, HistGradientBoostingRegresso
 from sklearn.compose import TransformedTargetRegressor
 from sklearn.metrics import r2_score, mean_absolute_error, mean_squared_error
 
-CLEAN = "mortgage_clean.csv"
+CLEAN = "data/mortgage_clean.csv"
 TARGET = "Max Loan Amount (USD)"
 DROP = [TARGET, "Interest Rate"]            # leakage / off-limits
 SEED = 42
@@ -100,7 +100,7 @@ def main():
                   f"test R2={m['R2']:.4f}  MAE=${m['MAE']:,.0f}  MAPE={m['MAPE_%']:.2f}%")
 
     table = pd.DataFrame(rows).sort_values("test_R2", ascending=False).reset_index(drop=True)
-    table.to_csv("model_benchmark.csv", index=False)
+    table.to_csv("metrics/model_benchmark.csv", index=False)
 
     pd.set_option("display.width", 200)
     print("\n=== MODEL x TARGET-SCALE COMPARISON (test set, USD scale) ===")

@@ -12,12 +12,12 @@ the only stage where the ground truth is used:
                         transparency trade-off the user asked to document.
 
 Artifacts:
-  model_final.joblib / model_full.joblib   fitted pipelines (reproducible)
-  evaluation_metrics.json                  test metrics for BOTH models
-  error_by_band.csv                        primary model accuracy by loan band
-  feature_importance.csv                   permutation importance, BOTH models
-  predictions_test.csv                     actual/predicted/residual (primary)
-  model_eval.json                          bundle for the report widgets
+  models/model_final.joblib / models/model_full.joblib   fitted pipelines (reproducible)
+  metrics/evaluation_metrics.json          test metrics for BOTH models
+  metrics/error_by_band.csv                primary model accuracy by loan band
+  metrics/feature_importance.csv           permutation importance, BOTH models
+  metrics/predictions_test.csv             actual/predicted/residual (primary)
+  metrics/model_eval.json                  bundle for the report widgets
 
 Protocol matches 02_model_benchmark.py (same split, seed).
 """
@@ -34,7 +34,7 @@ from sklearn.ensemble import HistGradientBoostingRegressor
 from sklearn.inspection import permutation_importance
 from sklearn.metrics import r2_score, mean_absolute_error, mean_squared_error
 
-CLEAN = "mortgage_clean.csv"
+CLEAN = "data/mortgage_clean.csv"
 TARGET = "Max Loan Amount (USD)"
 SEED = 42
 
@@ -97,7 +97,7 @@ def main():
     by_band = eb.groupby("band", observed=False).agg(
         n=("actual", "size"), mean_actual=("actual", "mean"),
         MAE=("abs_err", "mean"), MAPE_pct=("ape", "mean")).round(2)
-    by_band.to_csv("error_by_band.csv")
+    by_band.to_csv("metrics/error_by_band.csv")
     print("\nPrimary model — error by loan-size band:")
     print(by_band.to_string())
 
@@ -112,16 +112,16 @@ def main():
           f"{within10:.1f}% within +/-10% of actual.")
 
     # --- Persist ---
-    joblib.dump(prim_model, "model_final.joblib")
-    joblib.dump(full_model, "model_full.joblib")
-    prim_imp.assign(model="primary").to_csv("feature_importance.csv", index=False)
-    full_imp.assign(model="full").to_csv("feature_importance.csv", mode="a",
+    joblib.dump(prim_model, "models/model_final.joblib")
+    joblib.dump(full_model, "models/model_full.joblib")
+    prim_imp.assign(model="primary").to_csv("metrics/feature_importance.csv", index=False)
+    full_imp.assign(model="full").to_csv("metrics/feature_importance.csv", mode="a",
                                          header=False, index=False)
     pd.DataFrame({"actual": yte, "predicted": prim_pred, "residual": resid}).to_csv(
-        "predictions_test.csv", index=False)
+        "metrics/predictions_test.csv", index=False)
     json.dump({"primary": prim_m, "full": full_m,
                "n_test": int(len(yte)), "within_5pct": within5, "within_10pct": within10},
-              open("evaluation_metrics.json", "w"), indent=2)
+              open("metrics/evaluation_metrics.json", "w"), indent=2)
 
     rng = np.random.default_rng(SEED)
     idx = rng.choice(len(yte), size=min(2500, len(yte)), replace=False)
@@ -134,9 +134,9 @@ def main():
         "by_band": by_band.reset_index().astype({"band": str}).to_dict(orient="list"),
         "primary_importance": prim_imp.to_dict(orient="list"),
         "full_importance": full_imp.to_dict(orient="list"),
-    }, open("model_eval.json", "w"))
-    print("\nWrote model_final.joblib, model_full.joblib, evaluation_metrics.json, "
-          "error_by_band.csv, feature_importance.csv, predictions_test.csv, model_eval.json")
+    }, open("metrics/model_eval.json", "w"))
+    print("\nWrote models/model_final.joblib, models/model_full.joblib, metrics/evaluation_metrics.json, "
+          "metrics/error_by_band.csv, metrics/feature_importance.csv, metrics/predictions_test.csv, metrics/model_eval.json")
 
 
 if __name__ == "__main__":

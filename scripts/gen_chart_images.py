@@ -5,7 +5,7 @@ Native PPTX scatter charts render unreliably in LibreOffice/PowerPoint, so the
 predicted-vs-actual scatter is embedded as an image instead (bar/line charts are
 kept native in the deck). Brand palette, transparent background.
 
-Run:  python3 gen_chart_images.py   ->  img_scatter.png
+Run:  python3 scripts/gen_chart_images.py   ->  charts/img_scatter.png
 """
 import json
 import numpy as np
@@ -15,7 +15,7 @@ import matplotlib.pyplot as plt
 
 COB = "#306CB8"; INK3 = "#666D74"; LINE = "#D8DBDF"; INK4 = "#9399A0"
 
-ME = json.load(open("model_eval.json"))
+ME = json.load(open("metrics/model_eval.json"))
 a = np.array(ME["scatter"]["actual"]) / 1000
 p = np.array(ME["scatter"]["pred"]) / 1000
 rng = np.random.default_rng(0)
@@ -40,5 +40,5 @@ for sp in ["left", "bottom"]:
     ax.spines[sp].set_color(LINE)
 ax.tick_params(length=0)
 fig.tight_layout(pad=0.4)
-fig.savefig("img_scatter.png", transparent=True)
-print("wrote img_scatter.png")
+fig.savefig("charts/img_scatter.png", transparent=True)
+print("wrote charts/img_scatter.png")

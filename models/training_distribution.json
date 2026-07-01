@@ -3,7 +3,7 @@
   "lower_percentile": 1.0,
   "upper_percentile": 99.0,
   "n_train": 39992,
-  "source": "mortgage_clean.csv training split (random_state=42, test_size=0.2) \u2014 the 80% the shipped model was fit on",
+  "source": "data/mortgage_clean.csv training split (random_state=42, test_size=0.2) \u2014 the 80% the shipped model was fit on",
   "paired_model": "sha256:09a552abca85",
   "note": "Soft OOD flag: a row is flagged if any input is < p_low or > p_high. ~1% of training sits beyond each bound by construction.",
   "features": {

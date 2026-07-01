@@ -21,8 +21,8 @@ Method: per-feature percentile envelope. For each input we store the [p1, p99]
 band (the flag bounds) plus min/max/mean/std and a few extra percentiles for the
 record. score.py flags a row if any input falls below p1 or above p99.
 
-    python3 build_training_distribution.py            # -> training_distribution.json
-    python3 build_training_distribution.py --out X.json
+    python3 scripts/build_training_distribution.py            # -> models/training_distribution.json
+    python3 scripts/build_training_distribution.py --out X.json
 """
 
 import argparse
@@ -33,7 +33,7 @@ import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
 
-CLEAN = "mortgage_clean.csv"
+CLEAN = "data/mortgage_clean.csv"
 TARGET = "Max Loan Amount (USD)"
 SEED = 42                 # identical to 02/03 — reproduces the model's train split
 TEST_SIZE = 0.20
@@ -44,7 +44,7 @@ FEATURES = ["Annual Income (USD)", "Credit Score",
 
 LOWER_PCT = 1.0           # envelope lower bound (flag below this)
 UPPER_PCT = 99.0          # envelope upper bound (flag above this)
-MODEL_PATH = "model_final.joblib"
+MODEL_PATH = "models/model_final.joblib"
 
 
 def _model_hash(path=MODEL_PATH):
@@ -98,7 +98,7 @@ def build_reference(clean_path=CLEAN):
 def main(argv=None):
     p = argparse.ArgumentParser(description="Build the OOD training-distribution reference for score.py.")
     p.add_argument("--clean", default=CLEAN, help=f"Cleaned dataset (default: {CLEAN}).")
-    p.add_argument("--out", default="training_distribution.json", help="Output JSON path.")
+    p.add_argument("--out", default="models/training_distribution.json", help="Output JSON path.")
     args = p.parse_args(argv)
 
     ref = build_reference(args.clean)

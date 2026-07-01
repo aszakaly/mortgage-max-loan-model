@@ -11,15 +11,15 @@ Mono via Google Fonts) and Chart.js (CDN) for live charts:
 Slides are 1280x720, scaled to fit the viewport; arrow keys / on-screen controls
 navigate; the deck also prints one slide per landscape page.
 
-Run:  python3 05_build_html_decks.py
-Reads: model_eval.json, evaluation_metrics.json, model_benchmark.csv, eda_summary.json
+Run:  python3 scripts/05_build_html_decks.py
+Reads: metrics/model_eval.json, metrics/evaluation_metrics.json, metrics/model_benchmark.csv, metrics/eda_summary.json
 """
 import json, html
 import numpy as np
 
-EV = json.load(open("evaluation_metrics.json"))
-ME = json.load(open("model_eval.json"))
-EDA = json.load(open("eda_summary.json"))
+EV = json.load(open("metrics/evaluation_metrics.json"))
+ME = json.load(open("metrics/model_eval.json"))
+EDA = json.load(open("metrics/eda_summary.json"))
 
 # ---- compact chart data ----
 rng = np.random.default_rng(0)
@@ -299,8 +299,8 @@ def build_exec():
     charts = (SCAT_JS.replace("%ID%", "ex_scatter")
               + bar_js("ex_imp", DATA["imp_f"], DATA["imp_v"], [COB := "#306CB8", "#306CB8", "#455E73", "#455E73"], horiz=True, fmt="v=>v", dl=True)
               + bar_js("ex_bench", ["GBM (raw)", "Random forest", "Linear"], [22.4, 24.3, 51.9], ["#306CB8", "#455E73", "#9399A0"], horiz=False, fmt="v=>'$'+v+'k'"))
-    open("mortgage_exec_deck.html", "w").write(deck_html("Maximum loan amount — executive briefing", "".join(S), charts))
-    print("wrote mortgage_exec_deck.html")
+    open("decks/mortgage_exec_deck.html", "w").write(deck_html("Maximum loan amount — executive briefing", "".join(S), charts))
+    print("wrote decks/mortgage_exec_deck.html")
 
 
 def section(idx, title, sub, footr):
@@ -463,11 +463,11 @@ def build_internal():
         f'<div style="margin-top:30px">{bullets([("Synthetic-style data:","relationships are cleaner and more deterministic than a real lending book — expect lower R² on production data."),("Counter-intuitive debt sign:","existing debt correlates positively with the limit here (likely an artifact); revisit on real data."),("Mimics existing decisions:","the model learns the bank’s historical limit policy — it does not judge whether that policy is optimal or fair."),("No macro / collateral context:","property value, LTV, rates environment and affordability stress are out of scope.")])}</div>',
         footl=FL, footr="03 · Limitations"))
     # 21 reproducibility
-    steps = [("01_clean_data.py", "Validate + audit → mortgage_clean.csv, cleaning_audit.csv"),
-             ("02_model_benchmark.py", "Six model × scale combos → model_benchmark.csv"),
-             ("03_train_evaluate.py", "Fit both models, validate → metrics + artifacts"),
-             ("04_build_presentations.js", "These PPTX decks"),
-             ("05_build_html_decks.py", "The HTML twins")]
+    steps = [("scripts/01_clean_data.py", "Validate + audit → data/mortgage_clean.csv, metrics/cleaning_audit.csv"),
+             ("scripts/02_model_benchmark.py", "Six model × scale combos → metrics/model_benchmark.csv"),
+             ("scripts/03_train_evaluate.py", "Fit both models, validate → metrics + artifacts"),
+             ("scripts/04_build_presentations.js", "These PPTX decks"),
+             ("scripts/05_build_html_decks.py", "The HTML twins")]
     srows = "".join(f'<div style="display:flex;gap:20px;margin-bottom:16px;align-items:baseline"><div style="font-family:var(--fm);font-size:15px;color:var(--cobalt);width:30px">{i+1:02d}</div>'
                     f'<div style="font-family:var(--fm);font-size:15px;color:var(--ink);width:280px">{esc(f)}</div>'
                     f'<div style="font-family:var(--fb);font-size:14.5px;color:var(--ink2)">{esc(d)}</div></div>' for i, (f, d) in enumerate(steps))
@@ -507,8 +507,8 @@ def build_internal():
         + line_js("in_band", DATA["band"], DATA["mape"], fmt="v=>v+'%'")
         + bar_js("in_imp", DATA["imp_f"], DATA["imp_v"], ["#306CB8", "#306CB8", "#455E73", "#455E73"], horiz=True, fmt="v=>v")
     )
-    open("mortgage_internal_deck.html", "w").write(deck_html("Maximum loan amount — internal methodology", "".join(S), charts))
-    print("wrote mortgage_internal_deck.html")
+    open("decks/mortgage_internal_deck.html", "w").write(deck_html("Maximum loan amount — internal methodology", "".join(S), charts))
+    print("wrote decks/mortgage_internal_deck.html")
 
 
 if __name__ == "__main__":

@@ -1,9 +1,9 @@
 """
 01_clean_data.py — Mortgage max-loan project, Stage 2 (cleaning + audit).
 
-Input : mortgage_loan_dataset.csv  (raw, 49,990 rows)
-Output: mortgage_clean.csv         (validated dataset)
-        cleaning_audit.csv         (every check + every flagged row, with reasons)
+Input : data/mortgage_loan_dataset.csv  (raw, 49,990 rows)
+Output: data/mortgage_clean.csv         (validated dataset)
+        metrics/cleaning_audit.csv      (every check + every flagged row, with reasons)
 
 Cleaning policy (decided with the user):
   - The raw data has no nulls, no duplicates, and no impossible/contradictory
@@ -21,10 +21,10 @@ import json
 import numpy as np
 import pandas as pd
 
-RAW = "mortgage_loan_dataset.csv"
-CLEAN = "mortgage_clean.csv"
-AUDIT = "cleaning_audit.csv"
-EDA = "eda_summary.json"
+RAW = "data/mortgage_loan_dataset.csv"
+CLEAN = "data/mortgage_clean.csv"
+AUDIT = "metrics/cleaning_audit.csv"
+EDA = "metrics/eda_summary.json"
 TARGET = "Max Loan Amount (USD)"
 # Numeric predictors for the correlation panel (interest rate excluded by decision).
 EDA_NUMERIC = ["Annual Income (USD)", "Credit Score", "Down Payment (USD)",

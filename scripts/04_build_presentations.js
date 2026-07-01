@@ -5,9 +5,9 @@
  * used so the rendered deck is faithful everywhere (Arial~Hanken display,
  * Cambria~Spectral body, Courier New~Spline mono).
  *
- * Run:  NODE_PATH=$(npm root -g) node 04_build_presentations.js
- * Reads: model_eval.json, evaluation_metrics.json, model_benchmark.csv, eda_summary.json
- * Writes: mortgage_exec_deck.pptx, mortgage_internal_deck.pptx
+ * Run:  NODE_PATH=$(npm root -g) node scripts/04_build_presentations.js
+ * Reads: metrics/model_eval.json, metrics/evaluation_metrics.json, metrics/model_benchmark.csv, metrics/eda_summary.json
+ * Writes: decks/mortgage_exec_deck.pptx, decks/mortgage_internal_deck.pptx
  */
 const fs = require("fs");
 const PptxGenJS = require("pptxgenjs");
@@ -21,9 +21,9 @@ const C = {
   line: "D8DBDF", lineStrong: "B9BEC4", white: "FFFFFF",
 };
 const F = { disp: "Arial", body: "Cambria", mono: "Courier New" };
-const data = JSON.parse(fs.readFileSync("model_eval.json"));
-const ev = JSON.parse(fs.readFileSync("evaluation_metrics.json"));
-const eda = JSON.parse(fs.readFileSync("eda_summary.json"));
+const data = JSON.parse(fs.readFileSync("metrics/model_eval.json"));
+const ev = JSON.parse(fs.readFileSync("metrics/evaluation_metrics.json"));
+const eda = JSON.parse(fs.readFileSync("metrics/eda_summary.json"));
 
 // ---- shared primitives ----
 function eyebrow(slide, text, opts = {}) {
@@ -72,7 +72,7 @@ function bullets(slide, items, x, y, w, opts = {}) {
 // ---- chart helpers ----
 function scatterPredActual(slide, x, y, w, h) {
   // Native pptx scatter renders unreliably; embed brand-styled PNG (img_scatter.png).
-  slide.addImage({ path: "img_scatter.png", x, y, w, h, sizing: { type: "contain", w, h } });
+  slide.addImage({ path: "charts/img_scatter.png", x, y, w, h, sizing: { type: "contain", w, h } });
 }
 function barChart(slide, x, y, w, h, labels, values, opts = {}) {
   slide.addChart("bar", [{ name: opts.name || "v", labels, values }], {
@@ -308,7 +308,7 @@ function buildExec() {
     { colors: [C.cobalt, C.steel, C.ink4], showValue: true, fmt: '"$"0.0"k"', valHidden: true, gap: 50 });
   foot(s, "Maximum loan amount model", "Appendix C");
 
-  return p.writeFile({ fileName: "mortgage_exec_deck.pptx" });
+  return p.writeFile({ fileName: "decks/mortgage_exec_deck.pptx" });
 }
 
 // ===================================================================
@@ -521,7 +521,7 @@ function buildInternal() {
   statRow(s, [["0.990", "R²"], ["$21,966", "MAE"], ["3.65%", "MAPE"], ["94.9%", "WITHIN ±10%"]], 2.35);
   drafted(s, 3.0, 3.85, 7.3, 2.95);
   clabT(s, "Predicted vs actual — 9,998 held-out applicants", 3.2, 4.02, 6.5);
-  s.addImage({ path: "img_scatter.png", x: 3.25, y: 4.3, w: 6.8, h: 2.4, sizing: { type: "contain", w: 6.8, h: 2.4 } });
+  s.addImage({ path: "charts/img_scatter.png", x: 3.25, y: 4.3, w: 6.8, h: 2.4, sizing: { type: "contain", w: 6.8, h: 2.4 } });
   foot(s, FL, "03 · Validation");
 
   // 17 — RESIDUALS & BAND
@@ -578,11 +578,11 @@ function buildInternal() {
   s = p.addSlide(); bg(s, C.paper);
   head(s, "03 — Reproducibility", "One command per stage", 30);
   const steps = [
-    ["01_clean_data.py", "Validate + audit → mortgage_clean.csv, cleaning_audit.csv"],
-    ["02_model_benchmark.py", "Six model × scale combos → model_benchmark.csv"],
-    ["03_train_evaluate.py", "Fit both models, validate → metrics + artifacts"],
-    ["04_build_presentations.js", "These PPTX decks"],
-    ["05_build_html_decks.py", "The HTML twins"],
+    ["scripts/01_clean_data.py", "Validate + audit → data/mortgage_clean.csv, metrics/cleaning_audit.csv"],
+    ["scripts/02_model_benchmark.py", "Six model × scale combos → metrics/model_benchmark.csv"],
+    ["scripts/03_train_evaluate.py", "Fit both models, validate → metrics + artifacts"],
+    ["scripts/04_build_presentations.js", "These PPTX decks"],
+    ["scripts/05_build_html_decks.py", "The HTML twins"],
   ];
   let sy = 2.5;
   steps.forEach(([f, d], i) => {
@@ -629,7 +629,7 @@ function buildInternal() {
   s.addTable(ddr, { x: 0.9, y: 2.4, w: 11.5, colW: [3.7, 1.0, 6.8], rowH: 0.38, border: { type: "solid", color: C.line, pt: 0.5 }, valign: "middle" });
   foot(s, FL, "Appendix · Data dictionary");
 
-  return p.writeFile({ fileName: "mortgage_internal_deck.pptx" });
+  return p.writeFile({ fileName: "decks/mortgage_internal_deck.pptx" });
 }
 
 buildExec()

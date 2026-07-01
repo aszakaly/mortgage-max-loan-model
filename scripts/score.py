@@ -1,7 +1,7 @@
 """
 score.py — production scoring for the mortgage maximum-loan model.
 
-Inference only: loads the saved 4-feature model (model_final.joblib) and scores
+Inference only: loads the saved 4-feature model (models/model_final.joblib) and scores
 new applicants. Training/selection stays in 01–03; this is the handoff artifact.
 
 Feature contract (the only inputs the model needs):
@@ -22,8 +22,8 @@ data the model actually trained on (e.g. it never saw a Credit Score below 580
 or a Down Payment under $5,000). A row whose inputs fall outside the per-feature
 training envelope [p1, p99] is flagged ood_flag=True with a per-feature
 ood_reason — a SOFT signal that the prediction is an extrapolation. It does NOT
-reject the row or change status; the bounds live in training_distribution.json
-(built by build_training_distribution.py). If that file is absent, ood_flag is
+reject the row or change status; the bounds live in models/training_distribution.json
+(built by scripts/build_training_distribution.py). If that file is absent, ood_flag is
 left empty (unknown).
 
 Importable API:
@@ -34,10 +34,10 @@ Importable API:
     ood_check(df, dist) -> (ood_flag, ood_reason)       # out-of-distribution signal
 
 CLI:
-    python3 score.py --input applicants.csv --output scored.csv
-    python3 score.py --json '{"Annual Income (USD)": 120000, "Credit Score": 740,
+    python3 scripts/score.py --input applicants.csv --output scored.csv
+    python3 scripts/score.py --json '{"Annual Income (USD)": 120000, "Credit Score": 740,
                                  "Existing Monthly Debt (USD)": 900, "Down Payment (USD)": 60000}'
-    python3 score.py --selftest
+    python3 scripts/score.py --selftest
 
 Logging: operational + fatal messages go to stderr (add --log-file to also persist
 them); per-row rejections travel with the data (reason column + .rejects.csv), not
@@ -57,9 +57,9 @@ from datetime import datetime, timezone
 import numpy as np
 import pandas as pd
 
-MODEL_PATH = "model_final.joblib"
+MODEL_PATH = "models/model_final.joblib"
 EXPECTED_SKLEARN = "1.6.1"  # version the artifact was trained/pickled with
-DIST_PATH = "training_distribution.json"  # OOD reference (build_training_distribution.py)
+DIST_PATH = "models/training_distribution.json"  # OOD reference (build_training_distribution.py)
 
 FEATURES = ["Annual Income (USD)", "Credit Score",
             "Existing Monthly Debt (USD)", "Down Payment (USD)"]
